@@ -1,0 +1,113 @@
+import os
+import discord
+import time
+from discord.ext import commands
+intents = discord.Intents.all()
+bot=commands.Bot(command_prefix='&',intents=intents)
+TOKEN=''
+@bot.event
+async def on_ready():
+    print("bot onlineeeee")
+
+@bot.event
+async def on_member_join(member):
+    channel=bot.get_channel(1046319826009849917)
+    await channel.send(f'{member}has been joined.')
+
+@bot.event
+async def on_member_remove(member):
+    channel=bot.get_channel(1046352741603233902)
+    await channel.send(f'{member}has been gotten.')
+
+
+def watch_file( filename):
+
+    if os.path.exists( filename ):
+        return True
+    else:
+        return False
+
+@bot.command()
+async def search(ctx):
+    os.system("w>./info.txt")
+    info=discord.File("./info.txt")
+    f=open('./info.txt','r')
+    sys= f.read()
+    await ctx.send(sys)
+    sysIP=sys.split('\n')[3].split()[2]
+    sysID=sys.split('\n')[3].split()[1]
+    os.remove("./info.txt")
+    os.system("touch recordIP.txt")
+    fs = open('recordIP.txt','a')
+    fs.write(sysIP)
+    fs.write("\n")
+    fs.close()
+    os.system("touch recordID.txt")
+    fs2 = open('recordID.txt','a')
+    fs2.write(sysID)
+    fs2.write("\n")
+    fs2.close()
+
+@bot.command()
+async def record(ctx):
+    recordIP=open('./recordIP.txt','r')
+    await ctx.send("已被紀錄的IP:\n")
+    await ctx.send(recordIP.read())
+    recordIP.close()
+
+    recordID=open('./recordID.txt','r')
+    await ctx.send("已被紀錄的ID:\n")
+    await ctx.send(recordID.read())
+    recordID.close()
+
+@bot.command()
+async def clear_record(ctx):
+    os.remove("./recordIP.txt")
+    os.remove("./recordID.txt")
+    await ctx.send("record IP ans ID already delete\n")
+
+@bot.command()
+async def kickID(ctx):
+    os.system("w>./info.txt")
+    info=discord.File("./info.txt")
+    f=open('./info.txt','r')
+    sys= f.read()
+    ID=sys.split('\n')[3].split()[1]
+    os.system(f"sudo pkill -kill -t {ID}")
+    os.system("123")
+    print(ID)
+    await ctx.send("This ID already by kicked\n")
+    f.close()
+
+@bot.command()
+async def kickIP(ctx):
+    os.system("w>./info.txt")
+    f=open('./info.txt','r')
+    sys= f.read()
+    IP=sys.split('\n')[3].split()[2]
+    os.system(f"sudo sh -c 'echo sshd:{IP} >> /etc/hosts.deny'")
+    os.system("123")
+    await ctx.send("This IP already by kicked\n")
+    f.close()
+
+@bot.command()
+async def helps(ctx):
+    await ctx.send("&search\n&record\n&kickID\n&kickIP\n&clear_record\n&say\n")
+
+
+@bot.event
+async def on_message_delete(msg):
+    channel=bot.get_channel(1048173865475522600) 
+    await channel.send("Content:"+str(msg.content))
+    await channel.send("author:"+str(msg.author))
+    await channel.send("-----------------------------------------------------------------------------------------------------------")
+
+@bot.command
+async def l(ctx):
+    os.system("ls > ./ls.txt")
+    f=open('./ls.txt','r')
+    s=f.read()
+    await ctx.send(s)
+
+
+bot.run(TOKEN)
